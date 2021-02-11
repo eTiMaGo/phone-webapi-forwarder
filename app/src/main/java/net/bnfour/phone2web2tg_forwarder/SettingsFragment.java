@@ -33,27 +33,6 @@ public class SettingsFragment extends PreferenceFragment
         addPreferencesFromResource(R.xml.preferences);
         updateAll();
 
-        Preference thirdParty = findPreference("3rd_party");
-        thirdParty.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(_context)
-                        .setTitle(R.string.third_party_title)
-                        .setMessage(R.string.third_party_long)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                Dialog dialog = dialogBuilder.show();
-                TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
-                messageView.setTextSize(12);
-                return true;
-            }
-        });
-
     }
 
     @Override
@@ -101,43 +80,43 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    // true when endpoint is 'ok', also sets summary
-    private boolean updateEndpoint() {
-        final String key = "api_endpoint_url";
-        String endpoint = getPreferenceManager().getSharedPreferences().getString(key, "");
-        Preference p = findPreference(key);
-        PreferenceCheckHelper helper = new PreferenceCheckHelper(_context);
-
-        if (endpoint.equals("")) {
-            p.setSummary(R.string.connection_not_set);
-            return false;
-        } else if (!helper.isEndpointValid(endpoint)) {
-            p.setSummary(R.string.bad_endpoint);
-            return false;
-        } else {
-            p.setSummary(R.string.connection_set_okay);
-            return true;
-        }
-    }
+//    // true when endpoint is 'ok', also sets summary
+//    private boolean updateEndpoint() {
+//        final String key = "api_endpoint_url";
+//        String endpoint = getPreferenceManager().getSharedPreferences().getString(key, "");
+//        Preference p = findPreference(key);
+//        PreferenceCheckHelper helper = new PreferenceCheckHelper(_context);
+//
+//        if (endpoint.equals("")) {
+//            p.setSummary(R.string.connection_not_set);
+//            return false;
+//        } else if (!helper.isEndpointValid(endpoint)) {
+//            p.setSummary(R.string.bad_endpoint);
+//            return false;
+//        } else {
+//            p.setSummary(R.string.connection_set_okay);
+//            return true;
+//        }
+//    }
 
     private void updateConnectionAndDependent() {
         // &, not &&, since we have side effects
-        boolean valid = updateToken() & updateEndpoint();
+        boolean valid = updateToken();
 
         if (!valid) {
             Toast.makeText(_context, getString(R.string.bad_connection_toast), Toast.LENGTH_LONG).show();
         }
 
-        for (String depKey: keysDependentOnConnection) {
-            Preference p = findPreference(depKey);
-            p.setEnabled(valid);
-        }
+//        for (String depKey: keysDependentOnConnection) {
+//            Preference p = findPreference(depKey);
+//            p.setEnabled(valid);
+//        }
     }
 
     private void updateAll() {
         updateConnectionAndDependent();
-        updateFilterList();
-        updateListType();
+        //updateFilterList();
+        //updateListType();
     }
 
     // the following was taken straight from sms forwarder
