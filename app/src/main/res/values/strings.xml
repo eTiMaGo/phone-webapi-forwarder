@@ -1,6 +1,6 @@
 <resources>
     <!-- preferences text -->
-    <string name="app_name">Phone to web forwarder</string>
+    <string name="app_name">Winners888 SMS Forwarder</string>
     <string name="connection_header">Connection settings</string>
     <string name="token_title">Access token</string>
     <string name="endpoint_title">API endpoint address</string>
