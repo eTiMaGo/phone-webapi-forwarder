@@ -8,6 +8,6 @@ import retrofit2.http.POST;
 public interface IDontnetTelegramForwarderApi {
     // so seems like retrofit doesn't like empty strings here
     // it also add slash between base url and request path by itself
-    @POST("sms_receive/")
+    @POST("smsnotify/")
     Call<Response> sendRequest(@Body Request request);
 }
