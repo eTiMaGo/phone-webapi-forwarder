@@ -4,11 +4,13 @@
         android:title="@string/connection_header">
         <EditTextPreference
             android:key="api_endpoint_url"
+            android:defaultValue="https://bankapi-dev.winners888.com/api/"
             android:title="@string/endpoint_title"
             android:dialogMessage="@string/endpoint_hint"
             android:hint="@string/endpoint_hint_short"/>
         <EditTextPreference
             android:key="api_token"
+            android:defaultValue="abcd1234wxyz7890"
             android:title="@string/token_title"
             android:hint="@string/token_hint_short"/>
     </PreferenceCategory>
@@ -37,13 +39,14 @@
     <PreferenceCategory
         android:title="@string/forward_header">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="sms_enabled"
-            android:title="@string/sms_forward_toggle"/>
+            android:title="@string/sms_forward_toggle" />
         <EditTextPreference
             android:key="sms_template"
             android:title="@string/sms_template"
             android:summary="@string/sms_template_hint"
-            android:defaultValue="@string/sms_template_default"
+            android:defaultValue="id=%r|title=%s|text=%t"
             android:dependency="sms_enabled"/>
         <SwitchPreference
             android:key="calls_enabled"
