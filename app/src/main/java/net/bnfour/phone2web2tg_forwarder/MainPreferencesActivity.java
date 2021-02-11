@@ -22,6 +22,7 @@ import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -53,17 +54,19 @@ public class MainPreferencesActivity extends Activity {
 
     public static String mPhoneNumber;
 
+    Button settingsBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main);
 
-        SharedPreferences prefs = getDefaultSharedPreferences(this);
+        //SharedPreferences prefs = getDefaultSharedPreferences(this);
 
-        prefs.edit().clear().apply();
+        //prefs.edit().clear().apply();
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         if (ActivityCompat.checkSelfPermission(this, RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, READ_PHONE_NUMBERS) ==
@@ -81,7 +84,9 @@ public class MainPreferencesActivity extends Activity {
 //        .replace(android.R.id.content, new SettingsFragment())
 //        .commit();
 
+        settingsBtn = findViewById(R.id.settingsBtn);
 
+        settingsBtn.setOnClickListener(v -> openSettings());
 
 
         checkForUpdates();
@@ -90,6 +95,12 @@ public class MainPreferencesActivity extends Activity {
 
 
     }
+
+    public void openSettings(){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     private void requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{RECEIVE_SMS, READ_SMS, READ_PHONE_STATE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, 100);
@@ -188,7 +199,7 @@ public class MainPreferencesActivity extends Activity {
 
     public void Update(final String apkurl){
 
-        
+
         //ProgressDialog dialog = ProgressDialog.show(this, "", "Download Update, Please wait...", true);
         final ProgressDialog dialog = new ProgressDialog( this );
         dialog.setIndeterminate( false );
