@@ -6,7 +6,6 @@
         android:visibility="visible"
         tools:visibility="visible">
         <EditTextPreference
-            android:defaultValue="abcd1234wxyz7890"
             android:hint="@string/token_hint_short"
             android:key="api_token"
             android:title="@string/token_title" />
