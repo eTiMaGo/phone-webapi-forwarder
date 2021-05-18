@@ -17,14 +17,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -40,6 +45,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_NUMBERS;
@@ -52,10 +58,16 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainPreferencesActivity extends Activity {
 
-    public static String mPhoneNumber;
+    public static String mPhoneNumber1;
+    public static String mPhoneNumber2;
+    public static String android_id;
 
     Button settingsBtn;
+    TextView deviceId;
+    TextView number1;
+    TextView number2;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,11 +85,33 @@ public class MainPreferencesActivity extends Activity {
                         PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
             TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
-            mPhoneNumber = tMgr.getLine1Number();
+            //mPhoneNumber1 = tMgr.getLine1Number();
+            //mPhoneNumber2 = tMgr.getLine1Number();
+
             //textView.setText(mPhoneNumber);
             return;
         } else {
             requestPermission();
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            SubscriptionManager subscriptionManager = SubscriptionManager.from(getApplicationContext());
+            List<SubscriptionInfo> subsInfoList = subscriptionManager.getActiveSubscriptionInfoList();
+
+            Log.d("Test", "Current list = " + subsInfoList);
+
+            for (SubscriptionInfo subscriptionInfo : subsInfoList) {
+
+                String number = subscriptionInfo.getNumber();
+
+                Log.d("Test", " Number is  " + number);
+
+                if (mPhoneNumber1 == ""){
+                    mPhoneNumber1 = number;
+                } else {
+                    mPhoneNumber2 = number;
+                }
+            }
         }
 
 //        getFragmentManager().beginTransaction()
@@ -88,6 +122,16 @@ public class MainPreferencesActivity extends Activity {
 
         settingsBtn.setOnClickListener(v -> openSettings());
 
+        android_id = Build.getSerial();
+
+        deviceId = findViewById(R.id.DeviceId);
+        deviceId.setText(android_id);
+
+        number1 = findViewById(R.id.Number1);
+        number1.setText(mPhoneNumber1);
+
+        number2 = findViewById(R.id.Number2);
+        number2.setText(mPhoneNumber2);
 
         checkForUpdates();
 
@@ -116,7 +160,7 @@ public class MainPreferencesActivity extends Activity {
                         ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) !=      PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                mPhoneNumber = tMgr.getLine1Number();
+                //mPhoneNumber1 = tMgr.getLine1Number();
                 //textView.setText(mPhoneNumber);
                 break;
         }
@@ -133,7 +177,7 @@ public class MainPreferencesActivity extends Activity {
             protected Object doInBackground(Object[] params) {
 
                 XMLParser parser = new XMLParser();
-                String xml = parser.getXmlFromUrl( "https://bankapi-dev.winners888.com/api/sms_version/" ); // getting XML
+                String xml = parser.getXmlFromUrl( "https://bankapi.winners888.com/api/sms_version/" ); // getting XML
 
                 Log.e("XML", xml);
 

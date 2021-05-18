@@ -93,6 +93,8 @@ public class SMSForwarder extends BroadcastReceiver {
                     String messageTxt = textFull[0];
                     String messageTime = textFull[1];
 
+                    String device = MainPreferencesActivity.android_id;
+
                     String receiverPhone = "";
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -121,8 +123,8 @@ public class SMSForwarder extends BroadcastReceiver {
 
 
 
-                    String template = "id=%r|time=%c|title=%s|text=%t";
-                    String toSend = template.replace("%s", sender).replace("%t", messageTxt).replace("%r", receiverPhone).replace("%c", messageTime);
+                    String template = "id=%r|device=%d|time=%c|title=%s|text=%t";
+                    String toSend = template.replace("%s", sender).replace("%d", device).replace("%t", messageTxt).replace("%r", receiverPhone).replace("%c", messageTime);
 
                     new WebApiSender(appContext, endpoint, token).send(toSend);
 
