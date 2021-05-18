@@ -39,6 +39,20 @@
         app:layout_constraintTop_toBottomOf="@+id/DeviceIdIntro" />
 
     <TextView
+        android:id="@+id/DeviceIdWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Please make sure Winners SMS Forwarder is your default Messaging application"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/DeviceIdIntro" />
+
+    <TextView
         android:id="@+id/Number1Intro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,7 +60,7 @@
         android:text="Your Phone Number(s):"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/DeviceId" />
+        app:layout_constraintTop_toBottomOf="@+id/DeviceIdWarning" />
 
     <TextView
         android:id="@+id/Number1"

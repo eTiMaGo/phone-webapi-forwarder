@@ -64,6 +64,8 @@ public class MainPreferencesActivity extends Activity {
 
     Button settingsBtn;
     TextView deviceId;
+    TextView deviceIdWarning;
+    TextView deviceIdWelcome;
     TextView number1;
     TextView number2;
 
@@ -104,7 +106,7 @@ public class MainPreferencesActivity extends Activity {
 
                 String number = subscriptionInfo.getNumber();
 
-                Log.d("Test", " Number is  " + number);
+                Log.d("Test", " Number is " + number);
 
                 if (mPhoneNumber1 == ""){
                     mPhoneNumber1 = number;
@@ -124,8 +126,18 @@ public class MainPreferencesActivity extends Activity {
 
         android_id = Build.getSerial();
 
+        Log.d("ID", android_id);
+
         deviceId = findViewById(R.id.DeviceId);
-        deviceId.setText(android_id);
+        deviceIdWarning = findViewById(R.id.DeviceIdWarning);
+        deviceIdWelcome = findViewById(R.id.DeviceIdIntro);
+
+        if (android_id.equals("unknown")){
+            deviceIdWelcome.setVisibility(View.GONE);
+            deviceIdWarning.setVisibility(View.VISIBLE);
+        } else {
+            deviceId.setText(android_id);
+        }
 
         number1 = findViewById(R.id.Number1);
         number1.setText(mPhoneNumber1);
