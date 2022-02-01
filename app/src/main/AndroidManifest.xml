@@ -31,7 +31,8 @@
                 android:resource="@xml/paths" />
         </provider>
 
-        <activity android:name=".MainPreferencesActivity">
+        <activity android:name=".MainPreferencesActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,7 +58,8 @@
         </receiver>
 
         <receiver android:name=".MmsReceiver"
-            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            android:permission="android.permission.BROADCAST_WAP_PUSH"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
                 <data android:mimeType="application/vnd.wap.mms-message" />
@@ -74,7 +76,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ComposeSmsActivity" >
+        <activity android:name=".ComposeSmsActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
