@@ -74,9 +74,9 @@ public class SMSForwarder extends BroadcastReceiver {
 
                     if (messages.containsKey(sender)) {
                         String newText = messages.get(sender) + text;
-                        messages.put(sender, newText + "," + strDate);
+                        messages.put(sender, newText + "@#" + strDate);
                     } else {
-                        messages.put(sender, text + "," + strDate);
+                        messages.put(sender, text + "@#" + strDate);
                     }
                 }
                 // every message in a dict is checked against filters
@@ -89,13 +89,21 @@ public class SMSForwarder extends BroadcastReceiver {
                         return;
                     }
 
-                    String[] textFull = message.split(",");
-                    String messageTxt = textFull[0];
-                    String messageTime = textFull[1];
+                    String messageTxt = "";
+                    String messageTime = "";
+
+                    Log.d("raw", message);
+
+                    String[] textFull = message.split("@#");
+                    messageTxt = textFull[0];
+                    messageTime = textFull[1];
+
+                    Log.d("message1", messageTxt);
+                    Log.d("time1", messageTime);
 
                     String device = MainPreferencesActivity.android_id;
 
-                    String receiverPhone = "";
+                    String receiverPhone = "na";
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -121,7 +129,11 @@ public class SMSForwarder extends BroadcastReceiver {
                         }
                     }
 
-
+                    Log.d("sender", sender);
+                    Log.d("device", device);
+                    Log.d("receiver", receiverPhone);
+                    Log.d("message", messageTxt);
+                    Log.d("time", messageTime);
 
                     String template = "id=%r|device=%d|time=%c|title=%s|text=%t";
                     String toSend = template.replace("%s", sender).replace("%d", device).replace("%t", messageTxt).replace("%r", receiverPhone).replace("%c", messageTime);
