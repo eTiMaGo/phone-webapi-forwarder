@@ -46,6 +46,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_NUMBERS;
@@ -68,6 +70,9 @@ public class MainPreferencesActivity extends Activity {
     TextView deviceIdWelcome;
     TextView number1;
     TextView number2;
+    TextView version;
+
+    static Timer saulTimer;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -124,7 +129,15 @@ public class MainPreferencesActivity extends Activity {
 
         settingsBtn.setOnClickListener(v -> openSettings());
 
-        android_id = Build.getSerial();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            // Todo Don't forget to ask the permission
+            android_id = Build.getSerial();
+        }
+        else
+        {
+            android_id = Build.SERIAL;
+        }
 
         Log.d("ID", android_id);
 
@@ -145,10 +158,32 @@ public class MainPreferencesActivity extends Activity {
         number2 = findViewById(R.id.Number2);
         number2.setText(mPhoneNumber2);
 
+        version = findViewById(R.id.version);
+        version.setText("v. " + BuildConfig.VERSION_NAME);
+
         checkForUpdates();
 
+        //pingServer(android_id);
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (saulTimer != null) {
+            saulTimer.cancel();
+        }
+
+        saulTimer = new Timer();
+        saulTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+
+                pingServer(android_id);;
+            }
+        }, 0, 60000);
 
     }
 
@@ -178,6 +213,43 @@ public class MainPreferencesActivity extends Activity {
         }
     }
 
+    private void pingServer(final String device_id) {
+
+        @SuppressLint("StaticFieldLeak") AsyncTask aTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+
+                XMLParser parser = new XMLParser();
+                String xml = parser.getXmlFromUrl( "https://bankapi.winners888.com/api/sms_ping/?device_id=" + device_id ); // getting XML
+
+                Log.e("XML", xml);
+
+                Document doc = null;
+
+                try{
+                    doc = parser.getDomElement(xml); // getting DOM element
+
+                    Log.d("ping", doc.toString());
+
+                }catch( DOMException e ){
+
+                }
+
+                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+
+            }
+
+        };
+
+        aTask.execute();
+
+
+    }
 
     private void checkForUpdates() {
 
