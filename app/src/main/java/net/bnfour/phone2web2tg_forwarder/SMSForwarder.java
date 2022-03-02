@@ -55,6 +55,10 @@ public class SMSForwarder extends BroadcastReceiver {
 //                return;
 //            }
 
+            StringBuilder fulltext = new StringBuilder();
+            String strDate = "";
+            String sender = "";
+
             Bundle bundle = intent.getExtras();
             if (bundle.containsKey("pdus")) {
 
@@ -66,81 +70,53 @@ public class SMSForwarder extends BroadcastReceiver {
                 Object[] pdus = (Object[]) bundle.get("pdus");
                 for (Object pdu : pdus) {
                     SmsMessage msg = SmsMessage.createFromPdu((byte[]) pdu);
-                    String sender = msg.getOriginatingAddress();
-                    String text = msg.getMessageBody();
+                    sender = msg.getOriginatingAddress();
+                    fulltext.append(msg.getMessageBody());
                     long timestamp = msg.getTimestampMillis();
                     DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH.mm");
-                    String strDate = dateFormat.format(timestamp);
+                    strDate = dateFormat.format(timestamp);
 
-                    if (messages.containsKey(sender)) {
-                        String newText = messages.get(sender) + text;
-                        messages.put(sender, newText + "@#" + strDate);
-                    } else {
-                        messages.put(sender, text + "@#" + strDate);
-                    }
                 }
-                // every message in a dict is checked against filters
-                // and is forwarded if it matches
-                for (String sender : messages.keySet()) {
 
-                    String message = messages.get(sender);
+                String device = MainPreferencesActivity.android_id;
 
-                    if (!FilterHelper.passesFilter(preferences, sender)) {
+                String receiverPhone = "na";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
                         return;
                     }
+                    List<SubscriptionInfo> subscription = SubscriptionManager.from(appContext).getActiveSubscriptionInfoList();
+                    for (int i = 0; i < subscription.size(); i++) {
+                        SubscriptionInfo info = subscription.get(i);
+                        Log.d(TAG, "number " + info.getNumber());
+                        Log.d(TAG, "network name : " + info.getCarrierName());
+                        Log.d(TAG, "country iso " + info.getCountryIso());
 
-                    String messageTxt = "";
-                    String messageTime = "";
-
-                    Log.d("raw", message);
-
-                    String[] textFull = message.split("@#");
-                    messageTxt = textFull[0];
-                    messageTime = textFull[1];
-
-                    Log.d("message1", messageTxt);
-                    Log.d("time1", messageTime);
-
-                    String device = MainPreferencesActivity.android_id;
-
-                    String receiverPhone = "na";
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        List<SubscriptionInfo> subscription = SubscriptionManager.from(appContext).getActiveSubscriptionInfoList();
-                        for (int i = 0; i < subscription.size(); i++) {
-                            SubscriptionInfo info = subscription.get(i);
-                            Log.d(TAG, "number " + info.getNumber());
-                            Log.d(TAG, "network name : " + info.getCarrierName());
-                            Log.d(TAG, "country iso " + info.getCountryIso());
-
-                            if (info.getNumber() != null) {
-                                receiverPhone = info.getNumber();
-                            }
+                        if (info.getNumber() != null) {
+                            receiverPhone = info.getNumber();
                         }
                     }
-
-                    Log.d("sender", sender);
-                    Log.d("device", device);
-                    Log.d("receiver", receiverPhone);
-                    Log.d("message", messageTxt);
-                    Log.d("time", messageTime);
-
-                    String template = "id=%r|device=%d|time=%c|title=%s|text=%t";
-                    String toSend = template.replace("%s", sender).replace("%d", device).replace("%t", messageTxt).replace("%r", receiverPhone).replace("%c", messageTime);
-
-                    new WebApiSender(appContext, endpoint, token).send(toSend);
-
                 }
+
+                Log.d("sender", sender);
+                Log.d("device", device);
+                Log.d("receiver", receiverPhone);
+                Log.d("message", String.valueOf(fulltext));
+                Log.d("time", strDate);
+
+                String template = "id=%r|device=%d|time=%c|title=%s|text=%t";
+                String toSend = template.replace("%s", sender).replace("%d", device).replace("%t", fulltext.toString()).replace("%r", receiverPhone).replace("%c", strDate);
+
+                new WebApiSender(appContext, endpoint, token).send(toSend);
+                
             }
         }
     }
